@@ -1,4 +1,4 @@
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const baseUrl = '';  // Boş bırakın, relative path kullanacağız
 
 async function handleResponse(response) {
     const contentType = response.headers.get("content-type");
@@ -15,22 +15,21 @@ async function handleResponse(response) {
 
 export async function getAPI(endpoint) {
     try {
-        const response = await fetch(`${baseUrl}${endpoint}`, {
+        const response = await fetch(endpoint, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            next: { revalidate: 0 }
+            cache: 'no-store'
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
-            throw new Error(data.error || 'Network response was not ok');
+            const error = await response.text();
+            throw new Error(error);
         }
 
-        return data;
+        return response.json();
     } catch (error) {
         console.error('Fetch Error:', error);
         throw error;
@@ -39,23 +38,22 @@ export async function getAPI(endpoint) {
 
 export async function postAPI(endpoint, body, method = 'POST') {
     try {
-        const response = await fetch(`${baseUrl}${endpoint}`, {
+        const response = await fetch(endpoint, {
             method,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
-            next: { revalidate: 0 }
+            cache: 'no-store'
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
-            throw new Error(data.error || 'Network response was not ok');
+            const error = await response.text();
+            throw new Error(error);
         }
 
-        return data;
+        return response.json();
     } catch (error) {
         console.error('Fetch Error:', error);
         throw error;
