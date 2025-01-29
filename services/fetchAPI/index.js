@@ -1,4 +1,4 @@
-const baseUrl = '';  // Boş bırakın, relative path kullanacağız
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
 async function handleResponse(response) {
     const contentType = response.headers.get("content-type");
@@ -15,47 +15,44 @@ async function handleResponse(response) {
 
 export async function getAPI(endpoint) {
     try {
-        const response = await fetch(endpoint, {
-            method: 'GET',
+        const response = await fetch(`${baseUrl}${endpoint}`, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-            },
-            cache: 'no-store'
+            }
         });
 
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error);
+            throw new Error('Network response was not ok');
         }
 
-        return response.json();
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Fetch Error:', error);
-        throw error;
+        return { error: error.message };
     }
 }
 
 export async function postAPI(endpoint, body, method = 'POST') {
     try {
-        const response = await fetch(endpoint, {
+        const response = await fetch(`${baseUrl}${endpoint}`, {
             method,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body),
-            cache: 'no-store'
+            body: JSON.stringify(body)
         });
 
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error);
+            throw new Error('Network response was not ok');
         }
 
-        return response.json();
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Fetch Error:', error);
-        throw error;
+        return { error: error.message };
     }
 } 
