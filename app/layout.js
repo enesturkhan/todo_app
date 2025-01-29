@@ -10,6 +10,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
