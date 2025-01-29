@@ -1,4 +1,4 @@
-'use client';
+
 
 export default function TodoItem({ todo, onToggle, onDelete }) {
     return (
@@ -9,8 +9,8 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
                     <button
                         onClick={() => onToggle(todo)}
                         className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${todo.completed
-                                ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-transparent'
-                                : 'border-gray-300 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400'
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-transparent'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400'
                             }`}
                     >
                         {todo.completed && (
