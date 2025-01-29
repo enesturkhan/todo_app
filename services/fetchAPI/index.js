@@ -20,8 +20,14 @@ export async function getAPI(endpoint) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
+            cache: 'no-store'
         });
-        return await handleResponse(response);
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        return await response.json();
     } catch (error) {
         console.error('Fetch Error:', error);
         return { error: error.message };
@@ -37,8 +43,14 @@ export async function postAPI(endpoint, body, method = 'POST') {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
+            cache: 'no-store'
         });
-        return await handleResponse(response);
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        return await response.json();
     } catch (error) {
         console.error('Fetch Error:', error);
         return { error: error.message };
