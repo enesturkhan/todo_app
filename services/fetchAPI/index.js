@@ -15,17 +15,7 @@ async function handleResponse(response) {
 
 export async function getAPI(endpoint) {
     try {
-        const response = await fetch(`${baseUrl}${endpoint}`, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
+        const response = await fetch(endpoint);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -36,19 +26,13 @@ export async function getAPI(endpoint) {
 
 export async function postAPI(endpoint, body, method = 'POST') {
     try {
-        const response = await fetch(`${baseUrl}${endpoint}`, {
+        const response = await fetch(endpoint, {
             method,
             headers: {
-                'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body)
         });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
         const data = await response.json();
         return data;
     } catch (error) {

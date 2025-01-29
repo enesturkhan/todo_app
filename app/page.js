@@ -16,11 +16,7 @@ export default function Home() {
       try {
         setLoading(true);
         const data = await getAPI("/api/todos");
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setTodos(Array.isArray(data) ? data : []);
-        }
+        setTodos(Array.isArray(data) ? data : []);
       } catch (err) {
         setError("Görevler yüklenirken bir hata oluştu");
       } finally {
@@ -32,12 +28,12 @@ export default function Home() {
 
   const handleSubmit = async (newTodo) => {
     try {
-      setError("");
       const data = await postAPI("/api/todos", newTodo);
-      if (data.error) {
-        setError(data.error);
-      } else {
+      if (data && data.id) {
         addTodo(data);
+        setError("");
+      } else {
+        setError("Görev eklenirken bir hata oluştu");
       }
     } catch (err) {
       setError("Görev eklenirken bir hata oluştu");
