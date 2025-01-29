@@ -1,5 +1,18 @@
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
+async function handleResponse(response) {
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+        throw new Error(`Invalid content type: ${contentType}`);
+    }
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || 'API request failed');
+    }
+    return data;
+}
+
 export async function getAPI(endpoint) {
     try {
         const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -8,22 +21,9 @@ export async function getAPI(endpoint) {
                 'Content-Type': 'application/json',
             },
         });
-
-        // Check if response is JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Response is not JSON");
-        }
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Network response was not ok');
-        }
-
-        const data = await response.json();
-        return data;
+        return await handleResponse(response);
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Fetch Error:', error);
         return { error: error.message };
     }
 }
@@ -31,29 +31,16 @@ export async function getAPI(endpoint) {
 export async function postAPI(endpoint, body, method = 'POST') {
     try {
         const response = await fetch(`${baseUrl}${endpoint}`, {
-            method: method,
+            method,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
         });
-
-        // Check if response is JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Response is not JSON");
-        }
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Network response was not ok');
-        }
-
-        const data = await response.json();
-        return data;
+        return await handleResponse(response);
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Fetch Error:', error);
         return { error: error.message };
     }
 } 

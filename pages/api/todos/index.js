@@ -3,34 +3,39 @@ import { getAllData, createNewData } from "@/services/serviceOperations";
 export const config = {
     api: {
         bodyParser: true,
+        externalResolver: true,
     },
 };
 
 export default async function handler(req, res) {
-    // Set JSON content type
-    res.setHeader('Content-Type', 'application/json');
-
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'Accept, Content-Type');
-
-    // Handle OPTIONS request
+    // Handle preflight request
     if (req.method === 'OPTIONS') {
-        return res.status(200).json({});
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.status(200).end();
+        return;
     }
+
+    // Set headers for all responses
+    res.setHeader('Content-Type', 'application/json');
 
     try {
         switch (req.method) {
             case 'GET':
                 const todos = await getAllData();
-                console.log('GET /api/todos response:', todos); // Debug için
+                if (!Array.isArray(todos)) {
+                    throw new Error('Invalid response format');
+                }
                 return res.status(200).json(todos);
 
             case 'POST':
+                if (!req.body || !req.body.title) {
+                    return res.status(400).json({ error: 'Title is required' });
+                }
                 const todo = await createNewData(req.body);
-                console.log('POST /api/todos response:', todo); // Debug için
+                if (!todo || !todo.id) {
+                    throw new Error('Invalid todo creation response');
+                }
                 return res.status(201).json(todo);
 
             default:
@@ -38,6 +43,10 @@ export default async function handler(req, res) {
         }
     } catch (error) {
         console.error('API Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error', details: error.message });
+        return res.status(500).json({
+            error: 'Internal Server Error',
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 } 

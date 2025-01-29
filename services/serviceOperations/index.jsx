@@ -7,9 +7,10 @@ export async function getAllData() {
     const data = await prisma.todo.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    return data;
+    return data || [];
   } catch (error) {
-    return { error: error.message };
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch todos');
   }
 }
 
@@ -26,15 +27,25 @@ export async function createNewDataMany(Todo, newData) {
 // POST
 export async function createNewData(newData) {
   try {
+    if (!newData || !newData.title) {
+      throw new Error('Title is required');
+    }
+
     const data = await prisma.todo.create({
       data: {
         title: newData.title,
         completed: false
       }
     });
+
+    if (!data) {
+      throw new Error('Failed to create todo');
+    }
+
     return data;
   } catch (error) {
-    return { error: error.message };
+    console.error('Database Error:', error);
+    throw error;
   }
 }
 
