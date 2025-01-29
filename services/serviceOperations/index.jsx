@@ -4,9 +4,11 @@ import prisma from '@/lib/prisma';
 // GET ALL
 export async function getAllData() {
   try {
+    console.log('Fetching todos from database...'); // Debug log
     const data = await prisma.todo.findMany({
       orderBy: { createdAt: 'desc' }
     });
+    console.log('Fetched todos:', data); // Debug log
     return data;
   } catch (error) {
     console.error('Database Error:', error);
