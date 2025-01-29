@@ -5,18 +5,21 @@ import {
 } from "@/services/serviceOperations";
 
 export default async function handler(req, res) {
+    // Set JSON content type
+    res.setHeader('Content-Type', 'application/json');
+
     // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
     res.setHeader(
         'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+        'Accept, Content-Type'
     );
 
     // Handle OPTIONS request
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
+        res.status(200).json({});
         return;
     }
 
@@ -32,32 +35,29 @@ export default async function handler(req, res) {
                 if (!todo) {
                     return res.status(404).json({ error: "Todo not found" });
                 }
-                res.status(200).json(todo);
+                return res.status(200).json(todo);
             } catch (error) {
-                res.status(500).json({ error: "Error fetching todo" });
+                return res.status(500).json({ error: "Error fetching todo" });
             }
-            break;
 
         case "PUT":
             try {
                 const updatedTodo = await updateDataByAny({ id }, req.body);
-                res.status(200).json(updatedTodo);
+                return res.status(200).json(updatedTodo);
             } catch (error) {
-                res.status(500).json({ error: "Error updating todo" });
+                return res.status(500).json({ error: "Error updating todo" });
             }
-            break;
 
         case "DELETE":
             try {
                 await deleteDataByAny({ id });
-                res.status(200).json({ message: "Todo deleted successfully" });
+                return res.status(200).json({ message: "Todo deleted successfully" });
             } catch (error) {
-                res.status(500).json({ error: "Error deleting todo" });
+                return res.status(500).json({ error: "Error deleting todo" });
             }
-            break;
 
         default:
             res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
-            res.status(405).end(`Method ${method} Not Allowed`);
+            return res.status(405).json({ error: `Method ${method} Not Allowed` });
     }
 } 

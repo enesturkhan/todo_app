@@ -1,13 +1,16 @@
 import { getAllData, createNewData } from "@/services/serviceOperations";
 
 export default async function handler(req, res) {
+    // Set JSON content type
+    res.setHeader('Content-Type', 'application/json');
+
     // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
     res.setHeader(
         'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+        'Accept, Content-Type'
     );
 
     // Handle OPTIONS request
@@ -25,11 +28,10 @@ export default async function handler(req, res) {
                 if (todos.error) {
                     return res.status(500).json({ error: todos.error });
                 }
-                res.status(200).json(todos);
+                return res.status(200).json(todos);
             } catch (error) {
-                res.status(500).json({ error: "Error fetching todos" });
+                return res.status(500).json({ error: "Error fetching todos" });
             }
-            break;
 
         case "POST":
             try {
@@ -37,14 +39,13 @@ export default async function handler(req, res) {
                 if (todo.error) {
                     return res.status(500).json({ error: todo.error });
                 }
-                res.status(201).json(todo);
+                return res.status(201).json(todo);
             } catch (error) {
-                res.status(500).json({ error: "Error creating todo" });
+                return res.status(500).json({ error: "Error creating todo" });
             }
-            break;
 
         default:
             res.setHeader("Allow", ["GET", "POST"]);
-            res.status(405).end(`Method ${method} Not Allowed`);
+            return res.status(405).json({ error: `Method ${method} Not Allowed` });
     }
 } 
