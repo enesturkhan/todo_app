@@ -15,14 +15,11 @@ export default function Home() {
     const fetchTodos = async () => {
       try {
         setLoading(true);
+        setError("");
         const data = await getAPI("/api/todos");
-        if (data.error) {
-          setError(data.error);
-          return;
-        }
-        setTodos(data);
+        setTodos(Array.isArray(data) ? data : []);
       } catch (err) {
-        setError("Görevler yüklenirken bir hata oluştu");
+        setError(err.message || "Görevler yüklenirken bir hata oluştu");
       } finally {
         setLoading(false);
       }
@@ -34,13 +31,9 @@ export default function Home() {
     try {
       setError("");
       const data = await postAPI("/api/todos", newTodo);
-      if (data.error) {
-        setError(data.error);
-        return;
-      }
       addTodo(data);
     } catch (err) {
-      setError("Görev eklenirken bir hata oluştu");
+      setError(err.message || "Görev eklenirken bir hata oluştu");
     }
   };
 
@@ -51,27 +44,19 @@ export default function Home() {
         { completed: !todo.completed },
         "PUT"
       );
-      if (data.error) {
-        setError(data.error);
-        return;
-      }
       updateTodo(todo.id, data);
     } catch (err) {
-      setError("Failed to update todo");
+      setError(err.message || "Görev güncellenirken bir hata oluştu");
     }
   };
 
   const handleDelete = async (id) => {
     try {
       setError("");
-      const data = await postAPI(`/api/todos/${id}`, {}, "DELETE");
-      if (data.error) {
-        setError(data.error);
-        return;
-      }
+      await postAPI(`/api/todos/${id}`, {}, "DELETE");
       removeTodo(id);
     } catch (err) {
-      setError("Failed to delete todo");
+      setError(err.message || "Görev silinirken bir hata oluştu");
     }
   };
 
