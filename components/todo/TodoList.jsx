@@ -1,8 +1,7 @@
-
 import TodoItem from './TodoItem';
 
 export default function TodoList({ todos, onToggle, onDelete }) {
-    if (todos.length === 0) {
+    if (!Array.isArray(todos) || todos.length === 0) {
         return (
             <div className="text-center py-16 px-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
                 <div className="mb-6">

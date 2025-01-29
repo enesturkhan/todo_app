@@ -15,11 +15,14 @@ export default function Home() {
     const fetchTodos = async () => {
       try {
         setLoading(true);
-        setError("");
         const data = await getAPI("/api/todos");
-        setTodos(Array.isArray(data) ? data : []);
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setTodos(Array.isArray(data) ? data : []);
+        }
       } catch (err) {
-        setError(err.message || "Görevler yüklenirken bir hata oluştu");
+        setError("Görevler yüklenirken bir hata oluştu");
       } finally {
         setLoading(false);
       }
@@ -31,9 +34,13 @@ export default function Home() {
     try {
       setError("");
       const data = await postAPI("/api/todos", newTodo);
-      addTodo(data);
+      if (data.error) {
+        setError(data.error);
+      } else {
+        addTodo(data);
+      }
     } catch (err) {
-      setError(err.message || "Görev eklenirken bir hata oluştu");
+      setError("Görev eklenirken bir hata oluştu");
     }
   };
 
